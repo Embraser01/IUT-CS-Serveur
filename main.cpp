@@ -40,7 +40,7 @@ std::string boolToString(bool value){
 }
 
 std::string *bufferToString(char *buffer) {
-    std::string *ret = new string(buffer, BUFF_LEN);
+    std::string *ret = new string(buffer, strlen(buffer));
     return ret;
 }
 
