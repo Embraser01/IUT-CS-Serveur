@@ -164,9 +164,9 @@ Reponse *Joueur::login() {
 
 /*===== DELETE GAME =====*/
 
-void Joueur::deleteCurrent() {
+void Joueur::deleteCurrent(bool is_cancel) {
     this->partie_en_cours = NULL;
-    sendRes(new Reponse(106));
+    if(is_cancel) sendRes(new Reponse(106));
 }
 
 

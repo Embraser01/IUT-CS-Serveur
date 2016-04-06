@@ -72,7 +72,7 @@ public:
 
     // DELETE CURRENT GAME OF THE PLAYER
 
-    void deleteCurrent();
+    void deleteCurrent(bool is_cancel);
 
 
     // SEND REPONSE TO THE SOCKET BEFORE RETURNING DATA

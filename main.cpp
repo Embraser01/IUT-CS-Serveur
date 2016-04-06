@@ -107,7 +107,7 @@ void *login(void *data) {
         }
 
         for (unsigned int i = 0; i < joueurs.size(); i++) {
-            if (FD_ISSET(joueurs.at(i)->getSocket(), &read_login)) {
+            if (joueurs.at(i) != NULL && FD_ISSET(joueurs.at(i)->getSocket(), &read_login)) {
 
                 if (recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0) == -1) {
                     FD_CLR(joueurs.at(i)->getSocket(), &original_login);
@@ -149,7 +149,7 @@ void *wait_list(void *data) {
         }
 
         for (unsigned int i = 0; i < joueurs.size(); i++) {
-            if (FD_ISSET(joueurs.at(i)->getSocket(), &read_wait_list)) {
+            if (joueurs.at(i) != NULL && FD_ISSET(joueurs.at(i)->getSocket(), &read_wait_list)) {
 
                 if (recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0) == -1) {
                     FD_CLR(joueurs.at(i)->getSocket(), &original_wait_list);
