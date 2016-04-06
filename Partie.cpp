@@ -2,6 +2,7 @@
 // Created by user01 on 22/03/16.
 //
 
+#include <iostream>
 #include "Partie.h"
 
 
@@ -34,26 +35,59 @@ Partie::Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<
 Joueur *Partie::checkWin() {
 
     Joueur *tmp = NULL;
-    Joueur *win = NULL;
 
-    for (int i = 0; i < this->taille_plateau - nb_pion_a_aligner + 1 && win == NULL; i++) {
-        for (int j = 0; j < taille_plateau - nb_pion_a_aligner + 1 && win == NULL; j++) {
+    bool good_1;
+    bool good_2;
+    bool good_3;
+    bool good_4;
+
+    for (int i = 0; i < taille_plateau; i++) {
+        for (int j = 0; j < taille_plateau; j++) {
             tmp = plateau[i][j];
-            for (int k = 0; k < nb_pion_a_aligner; k++) {
-                if (plateau[i][j + k] != tmp) break;
-                if (plateau[i + k][j] != tmp) break;
-                if (plateau[i + k][j + k] != tmp) break;
+            if(tmp != NULL) {
+                good_1 = true;
+                good_2 = true;
+                good_3 = true;
+                good_4 = true;
 
-                if (i > nb_pion_a_aligner && plateau[i - k][j + k] != tmp) break;
-                if (j > nb_pion_a_aligner && plateau[i + k][j - k] != tmp) break;
+                for (int k = 0; k < nb_pion_a_aligner; k++) {
+                    if (j + k >= taille_plateau || plateau[i][j + k] != tmp) good_1 = false; // Vertical
+                    if (i + k >= taille_plateau || plateau[i + k][j] != tmp) good_2 = false; // Horizontal
+                    if (i + k >= taille_plateau || j + k < taille_plateau && plateau[i + k][j + k] != tmp) good_3 = false; // Diagonale (haut à gauche vers bas à droite)
 
-                win = plateau[i][j];
+
+                    if (j < nb_pion_a_aligner -1 && i > taille_plateau - nb_pion_a_aligner) good_4 = false;
+                    if (good_4 && plateau[i + k][j - k] != tmp) good_4 = false;
+
+                }
+                if (good_1 || good_2 || good_3 || good_4) return plateau[i][j];
             }
         }
     }
-
-    return win;
+    return NULL;
 }
+
+void Partie::testIA() {
+    taille_plateau = 5;
+    nb_joueur = 2;
+    nb_pion_a_aligner = 3;
+
+    plateau = new Joueur**[taille_plateau];
+    for(int i = 0; i < taille_plateau; i++) plateau[i] = new Joueur*[taille_plateau];
+
+    Joueur* un = new Joueur(0);
+
+    plateau[0][1] = un;
+    plateau[1][1] = un;
+    plateau[2][2] = un;
+    plateau[3][3] = un;
+
+    Joueur* win = checkWin();
+
+    if(win != NULL) cout << "Le gagnant est : " << win->getSocket() << endl;
+    else cout << "Pas de gagnant" << endl;
+}
+
 
 Reponse *Partie::play(int x, int y, Joueur *whoPlay) {
 
@@ -102,10 +136,15 @@ void *Partie::start() {
             tmp = joueurs.at(i);
             if (FD_ISSET(tmp->getSocket(), &read_fds)) {
 
-                recv(tmp->getSocket(), buffer, BUFF_LEN, 0);
-                Reponse* reponse = joueurs.at(i)->negotiate(bufferToString(buffer));
-                if(reponse != NULL) printf("Thread partie : %d, message : %s \n", this->id, reponse->build().c_str());
-
+                if(recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0) == -1){
+                    this->abort();
+                    FD_CLR(joueurs.at(i)->getSocket(), &original_fds);
+                    joueurs.erase(joueurs.begin() + i - 1);
+                } else {
+                    Reponse *reponse = joueurs.at(i)->negotiate(bufferToString(buffer));
+                    if (reponse != NULL)
+                        printf("Thread partie : %d, message : %s \n", this->id, reponse->build().c_str());
+                }
                 memset(buffer, 0, BUFF_LEN);
             }
         }
@@ -178,6 +217,8 @@ Reponse *Partie::getPlateau() {
 void Partie::abort() {
     this->stop = true;
 }
+
+
 
 
 

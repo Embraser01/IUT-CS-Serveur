@@ -35,13 +35,13 @@ private:
     Reponse* get_state();
     Reponse* is_started();
     Reponse* is_ended();
-    Reponse* leave();
     Reponse* get_score();
     Reponse* login();
 
 
 public:
 
+    Reponse* leave();
     Reponse* negotiate(string* req); // Determine l'action à effectuer
 
 

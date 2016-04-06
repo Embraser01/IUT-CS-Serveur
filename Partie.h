@@ -92,6 +92,7 @@ public:
     Reponse *getPlateau();
 
 
+    void testIA();
     void abort();
 };
 
