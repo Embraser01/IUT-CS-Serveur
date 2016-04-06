@@ -78,6 +78,11 @@ public:
     // SEND REPONSE TO THE SOCKET BEFORE RETURNING DATA
 
     Reponse *sendRes(Reponse *reponse);
+
+
+    // SCORES
+
+    void new_win();
 };
 
 

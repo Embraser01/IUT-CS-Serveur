@@ -88,7 +88,10 @@ Reponse *Partie::play(int x, int y, Joueur *whoPlay) {
 
     Joueur *win = checkWin();
 
-    if (win != NULL) stop = true;
+    if (win != NULL) {
+        stop = true;
+        win->new_win();
+    }
 
     for (unsigned int i = 0; i < this->joueurs.size(); i++) {
         if (win != NULL) {

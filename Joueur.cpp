@@ -183,5 +183,14 @@ Reponse *Joueur::sendRes(Reponse *reponse) {
 }
 
 
+/*===== SCORES =====*/
+
+void Joueur::new_win() {
+    score++;
+}
+
+
+
+
 
 
