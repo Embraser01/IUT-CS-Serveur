@@ -71,6 +71,17 @@ Reponse *Joueur::abort_partie() {
 }
 
 Reponse *Joueur::join_partie() {
+    vector<string> params;
+    int paramNumber = split(*this->buffer, params, ' ');
+
+    if(paramNumber != 2) return new Reponse(210);
+
+
+    unsigned int id_partie = (unsigned int) stoi(params.at(1));
+    if(id_partie > parties.size() && id_partie > 0) return new Reponse(205);
+
+    partie_en_cours = parties.at(id_partie - 1);
+
     return partie_en_cours->addPlayer(this);
 }
 
@@ -141,7 +152,7 @@ Reponse *Joueur::login() {
 
     if (paramNumber == 2) {
         bool is_in = false;
-        for (int i = 0; i < joueurs.size(); i++) {
+        for (unsigned int i = 0; i < joueurs.size(); i++) {
             if (joueurs.at(i)->getPseudo().compare(params.at(1)) == 0) is_in = true;
         }
         if (is_in) return new Reponse(207);

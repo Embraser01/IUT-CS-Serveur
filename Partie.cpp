@@ -63,15 +63,18 @@ Reponse *Partie::play(int x, int y, Joueur *whoPlay) {
 
     plateau[x][y] = whoPlay;
 
-    for (int i = 0; i < joueurs.size(); i++)
+    for (unsigned int i = 0; i < joueurs.size(); i++)
         if (next_round == joueurs.at((unsigned long) i))
-            next_round = joueurs.at(i + 1 % joueurs.size());
+            next_round = joueurs.at((i + 1) % joueurs.size());
 
     Joueur *win = checkWin();
 
-    if (win != NULL) return new Reponse(102, win->getPseudo());
+    if (win != NULL){
+        stop = true;
+        return new Reponse(102, win->getPseudo());
+    }
 
-    for (int i = 0; this->joueurs.size(); i++){
+    for (unsigned int i = 0; i < this->joueurs.size(); i++){
         this->joueurs.at(i)->sendRes(new Reponse(100, "Au suivant !"));
         if(this->joueurs.at(i) == next_round) this->joueurs.at(i)->sendRes(new Reponse(107));
     }
@@ -84,7 +87,7 @@ void *Partie::start() {
 
     plateau = new Joueur**[taille_plateau];
     for(int i = 0; i < taille_plateau; i++) plateau[i] = new Joueur*[taille_plateau];
-
+    next_round = this->joueurs.at(0);
 
     while (!this->stop) {
         read_fds = original_fds;
@@ -95,22 +98,29 @@ void *Partie::start() {
         }
 
         Joueur *tmp;
-        for (int i = 0; i < joueurs.size(); i++) {
+        for (unsigned int i = 0; i < joueurs.size(); i++) {
             tmp = joueurs.at(i);
             if (FD_ISSET(tmp->getSocket(), &read_fds)) {
 
                 recv(tmp->getSocket(), buffer, BUFF_LEN, 0);
-                printf("Thread partie : %d, message : %s \n", this->id, joueurs.at(i)->negotiate(bufferToString(buffer))->build());
+                Reponse* reponse = joueurs.at(i)->negotiate(bufferToString(buffer));
+                if(reponse != NULL) printf("Thread partie : %d, message : %s \n", this->id, reponse->build().c_str());
+
+                memset(buffer, 0, BUFF_LEN);
             }
         }
     }
-    for (int i = 0; this->joueurs.size(); i++) this->joueurs.at(i)->deleteCurrent();
+    for (unsigned int i = 0; this->joueurs.size(); i++){
+        this->joueurs.at(i)->deleteCurrent();
+        FD_CLR(this->joueurs.at(i)->getSocket(), &original_fds);
+        FD_SET(this->joueurs.at(i)->getSocket(), &original_wait_list);
+    }
     pthread_exit(NULL);
 }
 
 
 bool Partie::begin() {
-    if (this->nb_joueur != joueurs.size()) return false;
+    if (this->nb_joueur != (int) joueurs.size()) return false;
     if(this->state == 1) return false;
 
     this->state = 1;
@@ -124,12 +134,12 @@ bool Partie::begin() {
 
 Reponse *Partie::addPlayer(Joueur *joueur) {
 
-    if (this->nb_joueur == (int) this->joueurs.size()) return new Reponse(204);
+    if ((unsigned int) this->nb_joueur == this->joueurs.size()) return new Reponse(204);
 
 
     if (this->wait_for.size() > 0) {
         bool is_in = false;
-        for (int i = 0; i < wait_for.size() && !is_in; i++)
+        for (unsigned int i = 0; i < wait_for.size() && !is_in; i++)
             if (wait_for.at(i).compare(joueur->getPseudo()) == 0)
                 is_in = true;
 
@@ -139,7 +149,7 @@ Reponse *Partie::addPlayer(Joueur *joueur) {
     joueurs.push_back(joueur);
     FD_SET(joueur->getSocket(), &this->original_fds);
 
-    if (this->nb_joueur == this->joueurs.size()) this->begin();
+    if (this->nb_joueur == (int) this->joueurs.size()) this->begin();
 
     return new Reponse(100, "Bien ajouté à la partie");
 

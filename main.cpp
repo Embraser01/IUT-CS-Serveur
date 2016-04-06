@@ -104,18 +104,19 @@ void *login(void *data) {
             pthread_exit(NULL);
         }
 
-        for (int i = 0; i < joueurs.size(); i++) {
+        for (unsigned int i = 0; i < joueurs.size(); i++) {
             if (FD_ISSET(joueurs.at(i)->getSocket(), &read_login)) {
 
                 recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0);
                 Reponse* reponse = joueurs.at(i)->negotiate(bufferToString(buffer));
-                printf("Thread login : %d, message : %s \n", i, reponse->build());
+                if(reponse != NULL)  printf("Thread login : %d, message : %s \n", i, reponse->build().c_str());
 
                 // Move to the wait_list thread
                 if (joueurs.at(i)->getPseudo().compare("") != 0) {
                     FD_CLR(joueurs.at(i)->getSocket(), &original_login);
                     FD_SET(joueurs.at(i)->getSocket(), &original_wait_list);
                 }
+                memset(buffer, 0, BUFF_LEN);
             }
         }
     }
@@ -141,15 +142,17 @@ void *wait_list(void *data) {
             pthread_exit(NULL);
         }
 
-        for (int i = 0; i < joueurs.size(); i++) {
+        for (unsigned int i = 0; i < joueurs.size(); i++) {
             if (FD_ISSET(joueurs.at(i)->getSocket(), &read_wait_list)) {
 
                 recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0);
                 Reponse* reponse = joueurs.at(i)->negotiate(bufferToString(buffer));
-                printf("Thread wait_list : %d, message %s\n", i, reponse->build());
+                if(reponse != NULL)  printf("Thread wait_list : %d, message %s\n", i, reponse->build().c_str());
 
                 if (joueurs.at(i)->getPartie_en_cours() != NULL)
                     FD_CLR(joueurs.at(i)->getSocket(), &original_wait_list);
+
+                memset(buffer, 0, BUFF_LEN);
             }
         }
     }
