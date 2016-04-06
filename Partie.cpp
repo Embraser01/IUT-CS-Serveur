@@ -13,6 +13,7 @@ Partie::Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<
 
     parties.push_back(this);
     id = (int) parties.size();
+    next_round = NULL;
 }
 
 
@@ -26,6 +27,7 @@ Partie::Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<
 
     this->addPlayer(creator);
     this->wait_for = wait_for;
+    next_round = NULL;
 }
 
 
@@ -80,6 +82,10 @@ Reponse *Partie::play(int x, int y, Joueur *whoPlay) {
 void *Partie::start() {
     char buffer[BUFF_LEN];
 
+    plateau = new Joueur**[taille_plateau];
+    for(int i = 0; i < taille_plateau; i++) plateau[i] = new Joueur*[taille_plateau];
+
+
     while (!this->stop) {
         read_fds = original_fds;
         // Select doit être parametre avec le numero max du descripteur, +1
@@ -100,12 +106,14 @@ void *Partie::start() {
     }
     for (int i = 0; this->joueurs.size(); i++) this->joueurs.at(i)->deleteCurrent();
     pthread_exit(NULL);
-
 }
 
 
 bool Partie::begin() {
     if (this->nb_joueur != joueurs.size()) return false;
+    if(this->state == 1) return false;
+
+    this->state = 1;
 
     if (pthread_create(&this->thread, NULL, &Partie::start_helper, this) == -1) {
         perror("Thread create ");
@@ -116,7 +124,7 @@ bool Partie::begin() {
 
 Reponse *Partie::addPlayer(Joueur *joueur) {
 
-    if (this->nb_joueur == this->joueurs.size()) return new Reponse(204);
+    if (this->nb_joueur == (int) this->joueurs.size()) return new Reponse(204);
 
 
     if (this->wait_for.size() > 0) {
@@ -128,8 +136,8 @@ Reponse *Partie::addPlayer(Joueur *joueur) {
         if (!is_in) return new Reponse(206);
     }
 
-    FD_SET(joueur->getSocket(), &this->original_fds);
     joueurs.push_back(joueur);
+    FD_SET(joueur->getSocket(), &this->original_fds);
 
     if (this->nb_joueur == this->joueurs.size()) this->begin();
 

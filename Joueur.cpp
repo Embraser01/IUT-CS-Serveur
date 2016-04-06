@@ -160,6 +160,8 @@ Reponse *Joueur::sendRes(Reponse *reponse) {
     string msg = reponse->build();
 
     send(socket, msg.c_str(), msg.size(), 0);
+
+    return reponse;
 }
 
 void Joueur::deleteCurrent() {
