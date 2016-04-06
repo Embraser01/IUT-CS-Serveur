@@ -53,7 +53,7 @@ public:
     int getId() const {
         return id;
     }
-
+this->joueurs.at(i)->sendRes(new Reponse(100, "Au suivant !"));
     int getState() const {
         return state;
     }

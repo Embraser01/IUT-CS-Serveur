@@ -2,7 +2,6 @@
 // Created by user01 on 22/03/16.
 //
 
-#include <sys/socket.h>
 #include "Partie.h"
 
 
@@ -68,9 +67,13 @@ Reponse *Partie::play(int x, int y, Joueur *whoPlay) {
 
     Joueur *win = checkWin();
 
-    if (win == NULL) return new Reponse(100, "Au suivant !");
+    if (win != NULL) return new Reponse(102, win->getPseudo());
 
-    return new Reponse(102, win->getPseudo());
+    for (int i = 0; this->joueurs.size(); i++){
+        this->joueurs.at(i)->sendRes(new Reponse(100, "Au suivant !"));
+        if(this->joueurs.at(i) == next_round) this->joueurs.at(i)->sendRes(new Reponse(107));
+    }
+    return NULL;
 }
 
 
