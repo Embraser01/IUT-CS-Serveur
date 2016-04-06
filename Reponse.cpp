@@ -1,11 +1,7 @@
-//
-// Created by user01 on 22/03/16.
-//
-
 #include "Reponse.h"
 
 string Reponse::build() {
-    if(data.size() == 0) return to_string(this->status_code);
+    if (data.size() == 0) return to_string(this->status_code);
 
     return to_string(this->status_code) + " " + data;
 }

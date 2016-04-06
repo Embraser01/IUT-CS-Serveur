@@ -18,7 +18,9 @@
 /*===== Lists of parties AND players =====*/
 
 class Joueur;
+
 class Partie;
+
 class Reponse;
 
 extern vector<Joueur *> joueurs;
@@ -36,6 +38,10 @@ extern fd_set read_wait_list;
 extern struct timeval time_now;
 extern int max_fd;
 
+/*===== UTILS =====*/
+
 extern std::string boolToString(bool value);
+
 extern std::string *bufferToString(char *buffer);
+
 extern unsigned int split(string txt, vector<string> &strs, char ch);

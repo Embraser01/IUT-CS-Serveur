@@ -34,7 +34,7 @@ int max_fd;
 
 /*===== Fonctions d'aide =====*/
 
-std::string boolToString(bool value){
+std::string boolToString(bool value) {
     return value ? "true" : "false";
 }
 
@@ -48,7 +48,7 @@ unsigned int split(string txt, vector<string> &strs, char ch) {
     string tok;
     strs.clear();
 
-    while(getline(ss, tok, ch)) {
+    while (getline(ss, tok, ch)) {
         strs.push_back(tok);
     }
 
@@ -109,7 +109,7 @@ void *login(void *data) {
         for (unsigned int i = 0; i < joueurs.size(); i++) {
             if (FD_ISSET(joueurs.at(i)->getSocket(), &read_login)) {
 
-                if(recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0) == -1){
+                if (recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0) == -1) {
                     FD_CLR(joueurs.at(i)->getSocket(), &original_login);
                     joueurs.erase(joueurs.begin() + i - 1);
                 } else {
@@ -151,7 +151,7 @@ void *wait_list(void *data) {
         for (unsigned int i = 0; i < joueurs.size(); i++) {
             if (FD_ISSET(joueurs.at(i)->getSocket(), &read_wait_list)) {
 
-                if(recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0) == -1){
+                if (recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0) == -1) {
                     FD_CLR(joueurs.at(i)->getSocket(), &original_wait_list);
                     joueurs.erase(joueurs.begin() + i - 1);
                 } else {
@@ -238,7 +238,7 @@ int main() {
     string error = "";
 
     if (pthread_create(&connection_t, NULL, new_client, NULL) == -1) error += "ERROR --> Thread create connexion ";
-    if (pthread_create(&login_t, NULL, login, NULL) == -1) error +=  "ERROR --> Thread create login ";
+    if (pthread_create(&login_t, NULL, login, NULL) == -1) error += "ERROR --> Thread create login ";
     if (pthread_create(&wait_list_t, NULL, wait_list, NULL) == -1) error += "ERROR --> Thread create wait_list ";
 
     if (pthread_join((pthread_t) connection_t, NULL) == -1) error += "Thread join ";
@@ -246,7 +246,7 @@ int main() {
     if (pthread_join((pthread_t) wait_list_t, NULL) == -1) error += "Thread join ";
 
 
-    if(error.compare("") != 0){
+    if (error.compare("") != 0) {
         perror(error.c_str());
         return EXIT_FAILURE;
     }

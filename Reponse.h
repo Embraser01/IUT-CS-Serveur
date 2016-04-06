@@ -1,7 +1,3 @@
-//
-// Created by user01 on 22/03/16.
-//
-
 #ifndef TP_REPONSE_H
 #define TP_REPONSE_H
 
@@ -18,6 +14,7 @@ private:
 
 public:
     Reponse(int status_code, const string &data);
+
     Reponse(int status_code);
 
 
@@ -25,7 +22,7 @@ public:
         return status_code;
     }
 
-    Reponse* setStatus_code(int status_code) {
+    Reponse *setStatus_code(int status_code) {
         Reponse::status_code = status_code;
         return this;
     }
@@ -34,7 +31,7 @@ public:
         return data;
     }
 
-    Reponse* setData(const string &data) {
+    Reponse *setData(const string &data) {
         Reponse::data = data;
         return this;
     }

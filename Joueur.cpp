@@ -1,15 +1,15 @@
-//
-// Created by user01 on 22/03/16.
-//
-
 #include <cstring>
 #include "Joueur.h"
 
+
+/*===== CONSTRUCTOR =====*/
 
 Joueur::Joueur(int socket) {
     this->socket = socket;
 }
 
+
+/*===== PARSER =====*/
 
 Reponse *Joueur::negotiate(string *req) {
 
@@ -40,7 +40,6 @@ Reponse *Joueur::negotiate(string *req) {
     return sendRes(new Reponse(210));
 }
 
-
 Reponse *Joueur::new_partie() {
     vector<string> params;
     int paramNumber = split(*this->buffer, params, ' ');
@@ -64,7 +63,6 @@ Reponse *Joueur::new_partie() {
     return new Reponse(201);
 }
 
-
 Reponse *Joueur::abort_partie() {
     partie_en_cours->abort();
     return NULL;
@@ -74,11 +72,11 @@ Reponse *Joueur::join_partie() {
     vector<string> params;
     int paramNumber = split(*this->buffer, params, ' ');
 
-    if(paramNumber != 2) return new Reponse(210);
+    if (paramNumber != 2) return new Reponse(210);
 
 
     unsigned int id_partie = (unsigned int) stoi(params.at(1));
-    if(id_partie > parties.size() && id_partie > 0) return new Reponse(205);
+    if (id_partie > parties.size() && id_partie > 0) return new Reponse(205);
 
     partie_en_cours = parties.at(id_partie - 1);
 
@@ -101,9 +99,7 @@ Reponse *Joueur::play_partie() {
     return new Reponse(210, "Paramètres incorrects");
 }
 
-
 Reponse *Joueur::get_grid() {
-
     return partie_en_cours->getPlateau();
 }
 
@@ -158,12 +154,23 @@ Reponse *Joueur::login() {
         if (is_in) return new Reponse(207);
 
         this->pseudo = params.at(1);
-        return new Reponse(100, "Vous etes logger sous le nom de " + pseudo);
+        return new Reponse(109, "Vous etes logger sous le nom de " + pseudo);
 
     }
     return new Reponse(208);
 
 }
+
+
+/*===== DELETE GAME =====*/
+
+void Joueur::deleteCurrent() {
+    this->partie_en_cours = NULL;
+    sendRes(new Reponse(106));
+}
+
+
+/*==== SEND RESPONSE =====*/
 
 Reponse *Joueur::sendRes(Reponse *reponse) {
     if (reponse == NULL) return NULL;
@@ -174,13 +181,6 @@ Reponse *Joueur::sendRes(Reponse *reponse) {
 
     return reponse;
 }
-
-void Joueur::deleteCurrent() {
-    this->partie_en_cours = NULL;
-    sendRes(new Reponse(106));
-}
-
-
 
 
 

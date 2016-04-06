@@ -1,7 +1,3 @@
-//
-// Created by user01 on 22/03/16.
-//
-
 #ifndef TP_JOUEUR_H
 #define TP_JOUEUR_H
 
@@ -14,58 +10,74 @@ class Partie;
 class Joueur {
 
 private:
+
+    // PLAYER ATTRIBUTES
+
     string pseudo;
-
     int score;
-
     int socket;
 
-    Partie* partie_en_cours;
+    Partie *partie_en_cours;
 
 
-    /*===== PARSER =====*/
+    // PARSER
 
-    string* buffer;
+    string *buffer;
 
-    Reponse* new_partie();
-    Reponse* abort_partie();
-    Reponse* join_partie();
-    Reponse* play_partie();
-    Reponse* get_grid();
-    Reponse* get_state();
-    Reponse* is_started();
-    Reponse* is_ended();
-    Reponse* get_score();
-    Reponse* login();
+    Reponse *new_partie();
+
+    Reponse *abort_partie();
+
+    Reponse *join_partie();
+
+    Reponse *play_partie();
+
+    Reponse *get_grid();
+
+    Reponse *get_state();
+
+    Reponse *is_started();
+
+    Reponse *is_ended();
+
+    Reponse *get_score();
+
+    Reponse *login();
 
 
 public:
 
-    Reponse* leave();
-    Reponse* negotiate(string* req); // Determine l'action à effectuer
-
+    // CONSTRUCTOR
 
     Joueur(int socket);
 
-    const string &getPseudo() const {
-        return pseudo;
-    }
 
-    int getScore() const {
-        return score;
-    }
+    // PARSER (PUBLIC)
 
-    int getSocket() const {
-        return socket;
-    }
+    Reponse *leave();
 
-    Partie* getPartie_en_cours() const {
-        return partie_en_cours;
-    }
+    Reponse *negotiate(string *req); // Determine l'action à effectuer
+
+
+    // GETTER AND SETTER
+
+    const string &getPseudo() const { return pseudo; }
+
+    int getScore() const { return score; }
+
+    int getSocket() const { return socket; }
+
+    Partie *getPartie_en_cours() const { return partie_en_cours; }
+
+
+    // DELETE CURRENT GAME OF THE PLAYER
 
     void deleteCurrent();
 
-    Reponse* sendRes(Reponse* reponse);
+
+    // SEND REPONSE TO THE SOCKET BEFORE RETURNING DATA
+
+    Reponse *sendRes(Reponse *reponse);
 };
 
 
