@@ -191,12 +191,12 @@ int main() {
 
     // TESTS
 
-    vector<string> tmp;
+    /*vector<string> tmp;
 
     Partie* test1 = new Partie(3,2,3, tmp);
     test1->testIA();
 
-    return 0;
+    return 0;*/
 
     // Point de connexion
 
