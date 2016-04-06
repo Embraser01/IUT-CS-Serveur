@@ -9,6 +9,7 @@
 
 #include <string.h>
 #include <vector>
+#include <sys/socket.h>
 #include "Reponse.h"
 #include "Joueur.h"
 #include "Partie.h"

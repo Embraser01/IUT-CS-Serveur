@@ -15,8 +15,8 @@ class Partie {
 
 private:
     // Helper to start pthread with a class
-    static void *start_helper(void * context){
-        return ((Partie*) context)->start();
+    static void *start_helper(void *context) {
+        return ((Partie *) context)->start();
     }
 
     int id;
@@ -26,6 +26,8 @@ private:
     int nb_joueur;
     int nb_pion_a_aligner;
 
+    bool stop;
+
 
     fd_set original_fds;
     fd_set read_fds;
@@ -33,20 +35,20 @@ private:
     pthread_t thread;
     timeval time_now;
 
-    vector<Joueur*> joueurs;
+    vector<Joueur *> joueurs;
     vector<string> wait_for;
 
-    Joueur* next_round;
+    Joueur *next_round;
 
-    Joueur*** plateau;
+    Joueur ***plateau;
 
-    void* start();
+    void *start();
 
 public:
 
     Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<string> wait_for);
 
-    Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<string> wait_for, Joueur* creator);
+    Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<string> wait_for, Joueur *creator);
 
     int getId() const {
         return id;
@@ -68,7 +70,7 @@ public:
         return nb_pion_a_aligner;
     }
 
-    const vector<Joueur*> &getJoueurs() const {
+    const vector<Joueur *> &getJoueurs() const {
         return joueurs;
     }
 
@@ -76,19 +78,21 @@ public:
         return next_round;
     }
 
-    bool getState(int x, int y){ return this->plateau[x][y] != NULL;}
+    bool getState(int x, int y) { return this->plateau[x][y] != NULL; }
 
 
-    Joueur* checkWin();
-    Reponse* play(int x, int y, Joueur*);
+    Joueur *checkWin();
+
+    Reponse *play(int x, int y, Joueur *);
 
     bool begin();
 
-    Reponse* addPlayer(Joueur* joueur);
+    Reponse *addPlayer(Joueur *joueur);
+
+    Reponse *getPlateau();
 
 
-    Reponse* getPlateau();
-
+    void abort();
 };
 
 

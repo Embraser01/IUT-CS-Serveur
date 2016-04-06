@@ -51,37 +51,21 @@ public:
         return pseudo;
     }
 
-    Joueur* setPseudo(const string &pseudo) {
-        this->pseudo = pseudo;
-        return this;
-    }
-
     int getScore() const {
         return score;
-    }
-
-    Joueur* setScore(int score) {
-        this->score = score;
-        return this;
     }
 
     int getSocket() const {
         return socket;
     }
 
-    Joueur* setSocket(int socket) {
-        this->socket = socket;
-        return this;
-    }
-
     Partie* getPartie_en_cours() const {
         return partie_en_cours;
     }
 
-    Joueur* setPartie_en_cours(Partie *partie_en_cours) {
-        this->partie_en_cours = partie_en_cours;
-        return this;
-    }
+    void deleteCurrent();
+
+    Reponse* sendRes(Reponse* reponse);
 };
 
 

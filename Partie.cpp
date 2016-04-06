@@ -10,6 +10,7 @@ Partie::Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<
         : taille_plateau(taille_plateau), nb_joueur(nb_joueur), nb_pion_a_aligner(nb_pion_a_aligner),
           wait_for(wait_for) {
     FD_ZERO(&original_fds);
+    stop = false;
 
     parties.push_back(this);
     id = (int) parties.size();
@@ -22,11 +23,11 @@ Partie::Partie(int taille_plateau, int nb_joueur, int nb_pion_a_aligner, vector<
 
     parties.push_back(this);
     id = (int) parties.size();
+    stop = false;
 
     this->addPlayer(creator);
     this->wait_for = wait_for;
 }
-
 
 
 Joueur *Partie::checkWin() {
@@ -73,11 +74,10 @@ Reponse *Partie::play(int x, int y, Joueur *whoPlay) {
 }
 
 
-
 void *Partie::start() {
     char buffer[BUFF_LEN];
 
-    while (1) {
+    while (!this->stop) {
         read_fds = original_fds;
         // Select doit être parametre avec le numero max du descripteur, +1
         if (select(max_fd, &read_fds, NULL, NULL, &time_now) == -1) {
@@ -91,14 +91,11 @@ void *Partie::start() {
             if (FD_ISSET(tmp->getSocket(), &read_fds)) {
 
                 recv(tmp->getSocket(), buffer, BUFF_LEN, 0);
-                printf("He, le client %d a dit quelque chose!\n", i);
-
-                string msg = tmp->negotiate(bufferToString(buffer))->build();
-
-                send(tmp->getSocket(), msg.c_str(), msg.size(), 0);
+                printf("Thread partie : %d, message : %s \n", this->id, joueurs.at(i)->negotiate(bufferToString(buffer))->build());
             }
         }
     }
+    for (int i = 0; this->joueurs.size(); i++) this->joueurs.at(i)->deleteCurrent();
     pthread_exit(NULL);
 
 }
@@ -107,7 +104,7 @@ void *Partie::start() {
 bool Partie::begin() {
     if (this->nb_joueur != joueurs.size()) return false;
 
-    if (pthread_create(&this->thread, NULL, &Partie::start_helper, this) == -1){
+    if (pthread_create(&this->thread, NULL, &Partie::start_helper, this) == -1) {
         perror("Thread create ");
         exit(EXIT_FAILURE);
     }
@@ -156,6 +153,12 @@ Reponse *Partie::getPlateau() {
 
     return new Reponse(108, plateau);
 }
+
+void Partie::abort() {
+    this->stop = true;
+}
+
+
 
 
 

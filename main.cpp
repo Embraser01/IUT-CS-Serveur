@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sys/socket.h>
 #include <netinet/in.h>
 
 #include <unistd.h>
@@ -109,12 +108,7 @@ void *login(void *data) {
             if (FD_ISSET(joueurs.at(i)->getSocket(), &read_login)) {
 
                 recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0);
-                printf("Thread login : %d \n", i);
-
-                string msg = joueurs.at(i)->negotiate(bufferToString(buffer))->build();
-
-                send(joueurs.at(i)->getSocket(), msg.c_str(), msg.size(), 0);
-
+                printf("Thread login : %d, message : %s \n", i, joueurs.at(i)->negotiate(bufferToString(buffer))->build());
 
                 // Move to the wait_list thread
                 if (joueurs.at(i)->getPseudo().compare("") != 0) {
@@ -150,11 +144,7 @@ void *wait_list(void *data) {
             if (FD_ISSET(joueurs.at(i)->getSocket(), &read_wait_list)) {
 
                 recv(joueurs.at(i)->getSocket(), buffer, BUFF_LEN, 0);
-                printf("Thread wait_list : %d \n", i);
-
-                string msg = joueurs.at(i)->negotiate(bufferToString(buffer))->build();
-
-                send(joueurs.at(i)->getSocket(), msg.c_str(), msg.size(), 0);
+                printf("Thread wait_list : %d, message %s\n", i, joueurs.at(i)->negotiate(bufferToString(buffer))->build());
 
                 if (joueurs.at(i)->getPartie_en_cours() != NULL)
                     FD_CLR(joueurs.at(i)->getSocket(), &original_wait_list);

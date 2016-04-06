@@ -5,9 +5,9 @@
 #include "Reponse.h"
 
 string Reponse::build() {
-    if(data.size() == 0) return this->status_code + "";
+    if(data.size() == 0) return to_string(this->status_code);
 
-    return this->status_code + " " + data;
+    return to_string(this->status_code) + " " + data;
 }
 
 Reponse::Reponse(int status_code, const string &data) {
